@@ -1,13 +1,16 @@
-import sys
 from sympy.solvers import solve
 from sympy import Symbol
 import numpy as np
 
 
 def input_values():
+    sub = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
     degree = int(input("Enter the degree of your polynomial: "))
-    variables = ['x', 'y', 'z', 'w', 't', 'u', 'v']
+    variables = []
+    for i in range(degree):
+        variables.append(('x' + str(i + 1)).translate(sub))
 
+    print(variables)
     c = 0
     c1 = 0
     coefficient_array = []
@@ -83,38 +86,51 @@ def decomposition(A):
                 j += 1
         i += 1
         k = i
-    # print("upper ", U)
-    # print("lower ", L)
+    print("upper ", U)
+    print("lower ", L)
     return U, L
 
 
 def forward_substitution(L, B):
-    D = {"d1": 0, "d2": 0, "d3": 0, "d4": 0, "d5": 0, "d6": 0, "d7": 0}
+    D = {}
     n = len(L)
+    i = 0
+    while i < n:
+        D.update({"d" + str(i + 1): 0})
+        i += 1
+
     i = 1
     j = 0
-    equation = ""
-    D["d1"] = B[0][0]
-    while i < n:
-        while L[i][j] != 0:
-            equation = equation + str(L[i][j]) + " * " + str(D["d" + str(j + 1)])
-            if L[i][j] > 0 and L[i][j + 1] != 0:
-                equation = equation + " + "
+    equation = 0
+    D["d1"] = B[0]
 
+    while i < n:
+        while j < n:
+            if D["d" + str(j + 1)] == 0:
+                break
+            equation = equation + (L[i][j] * D["d" + str(j + 1)])
             j += 1
-        value = 0
+
+        x = Symbol('x')
+        value = solve(equation + x - B[j])
+
+        D["d" + str(i + 1)] = value[0]
         j = 0
         i += 1
+        equation = 0
+
+    D_array = np.array([D["d1"]])
+    i = 1
+    while i < len(D):
+        D_array = np.append(D_array, [D["d" + str(i + 1)]], axis=0)
+        i += 1
+    return D_array
 
 
 if __name__ == "__main__":
-    x = 2
-    y = -1
-    s = solve(x+y)
-    print(s[0])
-    # A, B, X = input_values()
-    A = np.array([[2.0, -2.0, 4.0, 6.0], [2.0, 3.0, -4.0, -1.0], [-1.0, 2.0, -5.0, -4.0], [3.0, 2.0, 3.0, 7.0]])
-    # A = np.array([[1, -1, 2,], [2, 3, -4, -1], [-1, 2, -5, -4], [3, 2, 3, 7]])
-    B = np.array([[6, -2, 7, 4]])
+    A, B, X = input_values()
+    # A = np.array([[1.0, -1.0, 2.0, 3.0], [2.0, 3.0, -4.0, -1.0], [-1.0, 2.0, -5.0, -4.0], [3.0, 2.0, 3.0, 7.0]])
+    # B = np.array([6, -2, -7, 4])
     U, L = decomposition(A)
-    forward_substitution(L, B)
+    D = forward_substitution(L, B)
+    # print("D = ", D)
