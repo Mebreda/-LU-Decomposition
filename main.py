@@ -127,10 +127,25 @@ def forward_substitution(L, B):
     return D_array
 
 
+def backward_substitution(U, D):
+    n = len(U)
+
+    x = np.zeros_like(D)
+
+    x[-1] = D[-1] / U[-1, -1]
+
+    for i in range(n - 2, -1, -1):
+        x[i] = (D[i] - np.dot(U[i, i:], x[i:])) / U[i, i]
+
+    return x
+
+
 if __name__ == "__main__":
     A, B, X = input_values()
-    # A = np.array([[1.0, -1.0, 2.0, 3.0], [2.0, 3.0, -4.0, -1.0], [-1.0, 2.0, -5.0, -4.0], [3.0, 2.0, 3.0, 7.0]])
-    # B = np.array([6, -2, -7, 4])
+    A = np.array([[1.0, -1.0, 2.0, 3.0], [2.0, 3.0, -4.0, -1.0], [-1.0, 2.0, -5.0, -4.0], [3.0, 2.0, 3.0, 7.0]])
+    B = np.array([6, -2, -7, 4])
     U, L = decomposition(A)
     D = forward_substitution(L, B)
-    # print("D = ", D)
+    M = backward_substitution(U, D)
+    print("D = ", D)
+    print("M = ", M)
