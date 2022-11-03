@@ -2,11 +2,24 @@ from sympy.solvers import solve
 from sympy import Symbol
 import numpy as np
 
+"""
+S
+Asks the user for inputs
+    - number of variables
+    - coefficients of each variable
+    - value of each equation
+Stores it to a NumPy matrix and returns the three matrix
+    - A = coefficient matrix
+    - B = matrix of numbers on the right-hand side of the equations
+    - X = variable matrix
+"""
+
 
 def input_values():
     sub = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
-    degree = int(input("Enter the degree of your polynomial: "))
+    degree = int(input("Enter the number of variables: "))
     variables = []
+    # A loop that will save unique variables depending on the input
     for i in range(degree):
         variables.append(('x' + str(i + 1)).translate(sub))
 
@@ -18,8 +31,10 @@ def input_values():
     X = None
     A = None
     print("Enter the coefficient of the following variables")
+    # A loop that will ask for the values of the problem
     while degree > c:
         print("Equation ", c + 1)
+        # Stores the coefficients, variables, and the value of the equation
         while degree > c1:
             coefficient = float(input(variables[c1] + "= "))
             coefficient_array.append(coefficient)
@@ -30,10 +45,9 @@ def input_values():
                     X = np.append(X, [variables[c1]], axis=0)
 
             c1 += 1
-        # constant = float(input("c = "))
-        # coefficient_array.append(constant)
-        print("Enter the value of the sum")
-        s = float(input("sum = "))
+
+        print("Enter the value of the equation ", c + 1)
+        s = float(input("value = "))
         if B is None:
             B = np.array([s])
         else:
@@ -50,6 +64,13 @@ def input_values():
     return A, B, X
 
 
+"""
+1st step(decomposition) of the LU Decomposition 
+Applies the Gaussian Elimination to obtain the matrix U while simultaneously solving the values of matrix L
+Returns matrix U and matrix L
+"""
+
+
 def decomposition(A):
     n = len(A)
     print(n)
@@ -57,6 +78,7 @@ def decomposition(A):
     L = np.copy(A)
     i = 0
     j = 0
+    # Sets the needed 0s and 1s for the matrix L
     while i < n:
         while j < n - 1:
             j += 1
@@ -68,6 +90,8 @@ def decomposition(A):
 
     i = 0
     k = 0
+    # Gaussian Elimination for matrix U
+    # Solves the values per row
     while i < n:
 
         while k < n - 1:
@@ -80,9 +104,9 @@ def decomposition(A):
             else:
                 multiplier = abs(U[k][i])
 
-            L[k][i] = U[k][i] / divisor
+            L[k][i] = U[k][i] / divisor  # Sets the value of L
             while j < n:
-                U[k][j] = (U[i][j] / divisor) * multiplier + U[k][j]
+                U[k][j] = (U[i][j] / divisor) * multiplier + U[k][j]  # Sets the value of U
                 j += 1
         i += 1
         k = i
@@ -91,10 +115,18 @@ def decomposition(A):
     return U, L
 
 
+"""
+2nd step(forward substitution) of the LU Decomposition
+
+Returns matrix D(values of each variable)
+"""
+
+
 def forward_substitution(L, B):
     D = {}
     n = len(L)
     i = 0
+    # Creates dictionary D depending on the length of the array
     while i < n:
         D.update({"d" + str(i + 1): 0})
         i += 1
@@ -103,14 +135,16 @@ def forward_substitution(L, B):
     j = 0
     equation = 0
     D["d1"] = B[0]
-
+    # Solves the values of D per row
     while i < n:
+        # Stores the value to variable equation until it finds a variable in D that has no value
         while j < n:
             if D["d" + str(j + 1)] == 0:
                 break
             equation = equation + (L[i][j] * D["d" + str(j + 1)])
             j += 1
 
+        # uses the sympy solve() method to solve the value of the variable that has no value
         x = Symbol('x')
         value = solve(equation + x - B[j])
 
@@ -119,6 +153,7 @@ def forward_substitution(L, B):
         i += 1
         equation = 0
 
+    # converts dictionary D to a matrix
     D_array = np.array([D["d1"]])
     i = 1
     while i < len(D):
@@ -127,7 +162,8 @@ def forward_substitution(L, B):
     return D_array
 
 
-def backward_substitution(U, D):
+def backward_substitution(U, D, X):
+    """
     n = len(U)
 
     x = np.zeros_like(D)
@@ -138,14 +174,20 @@ def backward_substitution(U, D):
         x[i] = (D[i] - np.dot(U[i, i:], x[i:])) / U[i, i]
 
     return x
+    """
 
-
+#  Main method
 if __name__ == "__main__":
-    A, B, X = input_values()
+    # A, B, X = input_values()
+
+    # for testing purposes
     A = np.array([[1.0, -1.0, 2.0, 3.0], [2.0, 3.0, -4.0, -1.0], [-1.0, 2.0, -5.0, -4.0], [3.0, 2.0, 3.0, 7.0]])
     B = np.array([6, -2, -7, 4])
+    X = np.array(['x1', 'x2', 'x3', 'x4'])
+
     U, L = decomposition(A)
     D = forward_substitution(L, B)
-    M = backward_substitution(U, D)
+    M = backward_substitution(U, D, X)
+    # for testing purposes
     print("D = ", D)
     print("M = ", M)
