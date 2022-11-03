@@ -162,21 +162,42 @@ def forward_substitution(L, B):
     return D_array
 
 
-def backward_substitution(U, D, X):
-    """
+def backward_substitution(U, D):
+    X = {}
     n = len(U)
+    counter = 0
+    i = 0
+    while i < n:
+        X.update({"x" + str(i + 1): 0})
+        i += 1
 
-    x = np.zeros_like(D)
+    i = n - 1
+    j = n - 1
+    equation = 0
+    X["x1"] = D[0]
 
-    x[-1] = D[-1] / U[-1, -1]
+    while i > 0:
+        while j > 0:
+            if X["x" + str(counter + 1)] == 0:
+                break
+            equation = equation + (U[i][j] * X["x" + str(counter + 1)])
+            j -= 1
 
-    for i in range(n - 2, -1, -1):
-        x[i] = (D[i] - np.dot(U[i, i:], x[i:])) / U[i, i]
+        y = Symbol('y')
+        value = solve(equation + y - D[j])
 
-    return x
-    """
+        X["x" + str(i + 1)] = value[0]
+        j = n - 1
+        i -= 1
+        equation = 0
 
-#  Main method
+    X_array = np.array([X["x1"]])
+    c = 1
+    while c < len(X):
+        X_array = np.append(X_array, [X["x" + str(c + 1)]], axis = 0)
+        c += 1
+    return X_array
+
 if __name__ == "__main__":
     # A, B, X = input_values()
 
@@ -187,7 +208,7 @@ if __name__ == "__main__":
 
     U, L = decomposition(A)
     D = forward_substitution(L, B)
-    M = backward_substitution(U, D, X)
+    M = backward_substitution(U, D)
     # for testing purposes
     print("D = ", D)
     print("M = ", M)
