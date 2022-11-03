@@ -140,42 +140,14 @@ def forward_substitution(L, B):
 #     return x
 
 def backward_substitution(U, D):
-    X = {}
-    n = len(U)
-    i = 0
-    while i < n:
-        X.update({"x" + str(i + 1): 0})
-        i += 1
-
-    i = n - 1
-    j = 0
-    k = n
-    equation = 0
-    counter = 0
-
-    while i > -1:
-        while j < n:
-            equation = equation + (U[i][j] * X["x" + str(k)])
-            j += 1
-
-        y = Symbol('y')
-        value = solve(equation + y - D[i])
-        print(equation)
-        print(D[i])
-
-        X["x" + str(counter + 1)] = value[0]
-        j = 0
-        counter += 1
-        i -= 1
-        equation = 0
-        k -= 1
-
-    X_array = np.array([X["x1"]])
-    i = 1
-    while i < len(D):
-        X_array = np.append(X_array, [X["x" + str(i + 1)]], axis=0)
-        i += 1
-    return X_array
+    n = U.shape[0]
+    x = np.zeros(n)
+    for i in range(n-1, -1, -1):
+        tmp = D[i]
+        for j in range(i + 1, n):
+            tmp -= U[i, j] * x[j]
+        x[i] = tmp / U[i, i]
+    return x
 
 if __name__ == "__main__":
     # A, B, X = input_values()
