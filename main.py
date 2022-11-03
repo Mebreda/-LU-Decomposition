@@ -150,12 +150,11 @@ def backward_substitution(U, D):
     return x
 
 if __name__ == "__main__":
-    # A, B, X = input_values()
+    # A, B = input_values()
 
     # for testing purposes
     A = np.array([[1.0, -1.0, 2.0, 3.0], [2.0, 3.0, -4.0, -1.0], [-1.0, 2.0, -5.0, -4.0], [3.0, 2.0, 3.0, 7.0]])
     B = np.array([6, -2, -7, 4])
-    X = np.array(['x1', 'x2', 'x3', 'x4'])
 
     U, L = decomposition(A)
     D = forward_substitution(L, B)
