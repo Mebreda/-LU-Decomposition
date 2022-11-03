@@ -149,23 +149,26 @@ def backward_substitution(U, D):
 
     i = n - 1
     j = 0
+    k = n
     equation = 0
     counter = 0
 
-    while i > 0:
+    while i > -1:
         while j < n:
-            if X["x" + str(j + 1)] == 0:
-                break
-            equation = equation + (U[i][j] * X["x" + str(j + 1)])
+            equation = equation + (U[i][j] * X["x" + str(k)])
             j += 1
 
         y = Symbol('y')
         value = solve(equation + y - D[i])
+        print(equation)
+        print(D[i])
 
         X["x" + str(counter + 1)] = value[0]
         j = 0
+        counter += 1
         i -= 1
         equation = 0
+        k -= 1
 
     X_array = np.array([X["x1"]])
     i = 1
