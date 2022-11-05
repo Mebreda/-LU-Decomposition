@@ -126,7 +126,6 @@ def forward_substitution(L, B):
         i += 1
     return D_array
 
-
 # def backward_substitution(U, D, X):
 #     n = len(U)
 #
@@ -149,6 +148,8 @@ def backward_substitution(U, D):
         x[i] = tmp / U[i, i]
     return x
 
+
+
 if __name__ == "__main__":
     # A, B = input_values()
 
@@ -159,6 +160,16 @@ if __name__ == "__main__":
     U, L = decomposition(A)
     D = forward_substitution(L, B)
     M = backward_substitution(U, D)
+    print(" ")
+    
     # for testing purposes
     print("D = ", D)
-    print("M = ", M)
+    print(" ")
+    counter = 0
+    x_balyu = len(M)
+    while counter < x_balyu:
+        print("X", counter + 1, " = ", round(M[counter]))
+        counter += 1
+
+    # print("M = ", round(M[0]), round(M[1]), round(M[2]), round(M[3]))
+
