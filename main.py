@@ -182,11 +182,11 @@ def backward_substitution(U, D):
 
 #  Main method
 if __name__ == "__main__":
-    # A, B, X = input_values()
+    A, B, X = input_values()
 
     # for testing purposes
-    A = np.array([[1.0, -1.0, 2.0, 3.0], [2.0, 3.0, -4.0, -1.0], [-1.0, 2.0, -5.0, -4.0], [3.0, 2.0, 3.0, 7.0]])
-    B = np.array([6, -2, -7, 4])
+    # A = np.array([[1.0, -1.0, 2.0, 3.0], [2.0, 3.0, -4.0, -1.0], [-1.0, 2.0, -5.0, -4.0], [3.0, 2.0, 3.0, 7.0]])
+    # B = np.array([6, -2, -7, 4])
 
     U, L = decomposition(A)
     D = forward_substitution(L, B)
@@ -199,5 +199,5 @@ if __name__ == "__main__":
     counter = 0
     x_value = len(M)
     while counter < x_value:
-        print("X", counter + 1, " = ", round(M[counter]))
+        print(X[counter], " = ", round(M[counter]))
         counter += 1
