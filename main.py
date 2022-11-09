@@ -199,5 +199,5 @@ if __name__ == "__main__":
     counter = 0
     x_value = len(M)
     while counter < x_value:
-        print(X[counter], " = ", round(M[counter]))
+        print(X[counter], " = ", (M[counter]))
         counter += 1
