@@ -74,9 +74,9 @@ Returns matrix U and matrix L
 
 def decomposition(A):
     n = len(A)
-    print(n)
     U = np.copy(A)
-    L = np.copy(A)
+    L = np.zeros((n, n))
+
     i = 0
     j = 0
     # Sets the needed 0s and 1s for the matrix L
@@ -106,13 +106,25 @@ def decomposition(A):
                 multiplier = abs(U[k][i])
 
             L[k][i] = U[k][i] / divisor  # Sets the value of L
+            print()
+            print(U[k][i], " / ", divisor, " = ", L[k][i])  # Prints the formula for the lower diagonal matrix
+            print("L ", L)
             while j < n:
                 U[k][j] = (U[i][j] / divisor) * multiplier + U[k][j]  # Sets the value of U
                 j += 1
+
+            print()
+            print("U ", U)
+            print("( R", i+1, " / ", divisor, ")", " * ", multiplier, " + R", k+1)  # Prints the row formula
         i += 1
         k = i
-    print("upper ", U)
-    print("lower ", L)
+
+    print()
+    print("Upper diagonal matrix")
+    print(U)
+    print("Lower diagonal matrix")
+    print(L)
+    print()
     return U, L
 
 
@@ -134,6 +146,7 @@ def forward_substitution(L, B):
     i = 1
     j = 0
     equation = 0
+    equation_str = ""
     D["d1"] = B[0]
     # Solves the values of D per row
     while i < n:
@@ -142,16 +155,26 @@ def forward_substitution(L, B):
             if D["d" + str(j + 1)] == 0:
                 break
             equation = equation + (L[i][j] * D["d" + str(j + 1)])
+            # Stores the string equation to equation_str
+            equation_str = equation_str + " " + str(L[i][j]) + "d" + str(j + 1)
+            equation_str = equation_str + " + d" + str(j + 2)
             j += 1
+        # Prints the value of d1
+        if i == 1:
+            print("d1 = ", B[0])
 
+        print(equation_str + " =", B[j])    # Prints the equation
         # uses the sympy solve() method to solve the value of the variable that has no value
         x = Symbol('x')
-        value = solve(equation + x - B[j])
 
+        value = solve(equation + x - B[j])
         D["d" + str(i + 1)] = value[0]
+        print("d" + str(i + 1), " = ", value[0])    # Prints the value of d
+
         j = 0
         i += 1
         equation = 0
+        equation_str = ""
 
     # converts dictionary D to a matrix
     D_array = np.array([D["d1"]])
@@ -183,11 +206,12 @@ def backward_substitution(U, D):
 
 #  Main method
 if __name__ == "__main__":
-    A, B, X = input_values()
+    # A, B, X = input_values()
 
     # for testing purposes
-    # A = np.array([[1.0, -1.0, 2.0, 3.0], [2.0, 3.0, -4.0, -1.0], [-1.0, 2.0, -5.0, -4.0], [3.0, 2.0, 3.0, 7.0]])
-    # B = np.array([6, -2, -7, 4])
+    A = np.array([[1.0, -1.0, 2.0, 3.0], [2.0, 3.0, -4.0, -1.0], [-1.0, 2.0, -5.0, -4.0], [3.0, 2.0, 3.0, 7.0]])
+    B = np.array([6, -2, -7, 4])
+    X = np.array(["x1", "x2", "x3", "x4"])
 
     U, L = decomposition(A)
     D = forward_substitution(L, B)
