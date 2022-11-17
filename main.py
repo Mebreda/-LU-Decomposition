@@ -24,29 +24,30 @@ def input_values():
         variables.append(('x' + str(i + 1)).translate(sub))
 
     print(variables)
-    c = 0
-    c1 = 0
+    equation_cnt = 0
+    coef_cnt = 0
     coefficient_array = []
     B = None
     X = None
     A = None
     print("Enter the coefficient of the following variables")
     # A loop that will ask for the values of the problem
-    while degree > c:
-        print("Equation ", c + 1)
+    while degree > equation_cnt:
+        print("Equation ", equation_cnt + 1)
         # Stores the coefficients, variables, and the value of the equation
-        while degree > c1:
-            coefficient = float(input(variables[c1] + "= "))
+        while degree > coef_cnt:
+            coefficient = float(input(variables[coef_cnt] + "= "))
             coefficient_array.append(coefficient)
             if X is None:
-                X = np.array([variables[c1]])
+                # Initialize numpy array if X matrix is null
+                X = np.array([variables[coef_cnt]])
             else:
-                if variables[c1] not in X:
-                    X = np.append(X, [variables[c1]], axis=0)
+                if variables[coef_cnt] not in X:
+                    # Append horizontally
+                    X = np.append(X, [variables[coef_cnt]], axis=0)
+            coef_cnt += 1
 
-            c1 += 1
-
-        print("Enter the value of the equation ", c + 1)
+        print("Enter the right hand side of the equation ", equation_cnt + 1)
         s = float(input("value = "))
         if B is None:
             B = np.array([s])
@@ -59,8 +60,8 @@ def input_values():
             A = np.append(A, [coefficient_array], axis=0)
 
         coefficient_array = []
-        c1 = 0
-        c += 1
+        coef_cnt = 0
+        equation_cnt += 1
     return A, B, X
 
 
