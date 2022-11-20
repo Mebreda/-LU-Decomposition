@@ -157,9 +157,10 @@ def forward_substitution(L, B):
             equation = equation + (L[i][j] * D["d" + str(j + 1)])
             # Stores the string equation to equation_str
             equation_str = equation_str + " " + str(L[i][j]) + "d" + str(j + 1)
-            equation_str = equation_str + " + d" + str(j + 2)
             j += 1
+
         # Prints the value of d1
+        equation_str = equation_str + " + d" + str(j + 1)
         if i == 1:
             print("d1 = ", B[0])
 
