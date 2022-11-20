@@ -208,7 +208,7 @@ def backward_substitution(U, D):
         x_str = "X" + str(i+1) + " = " + str(tmp) + "/" + str(U[i, i])
         # Print the equation with answer
         print(eq_str + " =", D[i])
-        print(x_str + " = ", x_array[i])
+        print(x_str + " =", x_array[i])
         eq_str = " "
     return x_array
 
