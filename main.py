@@ -185,23 +185,32 @@ def forward_substitution(L, B):
     return D_array
 
 
+"""
+2nd step(forward substitution) of the LU Decomposition
+Returns matrix D(values of each variable)
+"""
+
+
 def backward_substitution(U, D):
-    """
-    n = len(U)
-    x = np.zeros_like(D)
-    x[-1] = D[-1] / U[-1, -1]
-    for i in range(n - 2, -1, -1):
-        x[i] = (D[i] - np.dot(U[i, i:], x[i:])) / U[i, i]
-    return x
-    """
-    n = U.shape[0]
-    x = np.zeros(n)
-    for i in range(n - 1, -1, -1):
+    eq_str = " "
+    print(" ")
+    u_index = U.shape[0]  # Returns an index with the dimensions of U
+    x_array = np.zeros(u_index)  # Creates a new array of (u_index) which is filled with zeros
+    # Backward Substitution equation
+    for i in range(u_index - 1, -1, -1):
         tmp = D[i]
-        for j in range(i + 1, n):
-            tmp -= U[i, j] * x[j]
-        x[i] = tmp / U[i, i]
-    return x
+        for j in range(i + 1, u_index):
+            tmp = tmp - U[i, j] * x_array[j]
+            eq_str = eq_str + " + " + str(U[i, j]) + "(" + "X" + str(j+1) + ")"
+        x_array[i] = tmp / U[i, i]
+        # Store the equation in a String
+        eq_str = str(tmp) + "(" + "X" + str(i+1) + ")" + eq_str
+        x_str = "X" + str(i+1) + " = " + str(tmp) + "/" + str(U[i, i])
+        # Print the equation with answer
+        print(eq_str + " =", D[i])
+        print(x_str + " = ", x_array[i])
+        eq_str = " "
+    return x_array
 
 
 #  Main method
