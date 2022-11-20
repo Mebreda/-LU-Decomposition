@@ -201,7 +201,7 @@ def backward_substitution(U, D):
         tmp = D[i]
         for j in range(i + 1, u_index):
             tmp = tmp - U[i, j] * x_array[j]
-            eq_str = eq_str + " + " + str(U[i, j]) + "(" + "X" + str(j+1) + ")"
+            eq_str = eq_str + "+ " + str(U[i, j]) + "(" + "X" + str(j+1) + ")"
         x_array[i] = tmp / U[i, i]
         # Store the equation in a String
         eq_str = str(tmp) + "(" + "X" + str(i+1) + ")" + eq_str
