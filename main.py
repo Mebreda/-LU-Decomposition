@@ -199,14 +199,14 @@ def backward_substitution(U, D):
     x_array = np.zeros(u_index)  # Creates a new array of (u_index) which is filled with zeros
     # Backward Substitution equation
     for i in range(u_index - 1, -1, -1):
-        tmp = D[i]
+        tmp = round(D[i], 14)
         for j in range(i + 1, u_index):
-            tmp = tmp - U[i, j] * x_array[j]
-            eq_str = eq_str + "+ " + str(U[i, j]) + "(" + "X" + str(j+1) + ")"
-        x_array[i] = tmp / U[i, i]
+            tmp = tmp - round(U[i, j], 14) * x_array[j]
+            eq_str = eq_str + "+ " + str(round(U[i, j], 14)) + "(" + "X" + str(j+1) + ")"
+        x_array[i] = tmp / round(U[i, i], 14)
         # Store the equation in a String
         eq_str = str(tmp) + "(" + "X" + str(i+1) + ")" + eq_str
-        x_str = "X" + str(i+1) + " = " + str(tmp) + "/" + str(U[i, i])
+        x_str = "X" + str(i+1) + " = " + str(tmp) + "/" + str(round(U[i, i], 14))
         # Print the equation with answer
         print(eq_str + "=", D[i])
         print(x_str + " =", x_array[i])
