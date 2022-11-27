@@ -71,6 +71,7 @@ Applies the Gaussian Elimination to obtain the matrix U while simultaneously sol
 Returns matrix U and matrix L
 """
 
+
 def decomposition(A):
     n = len(A)
     U = np.copy(A)
@@ -114,7 +115,7 @@ def decomposition(A):
 
             print()
             print("U ", U)
-            print("( R", i+1, " / ", divisor, ")", " * ", multiplier, " + R", k+1)  # Prints the row formula
+            print("( R", i + 1, " / ", divisor, ")", " * ", multiplier, " + R", k + 1)  # Prints the row formula
         i += 1
         k = i
 
@@ -134,55 +135,25 @@ Returns matrix D(values of each variable)
 
 
 def forward_substitution(L, B):
-    D = {}
-    n = len(L)
-    i = 0
-    # Creates dictionary D depending on the length of the array
-    while i < n:
-        D.update({"d" + str(i + 1): 0})
-        i += 1
-
-    i = 1
-    j = 0
-    equation = 0
+    D = []
     equation_str = ""
-    D["d1"] = B[0]
-    # Solves the values of D per row
-    while i < n:
-        # Stores the value to variable equation until it finds a variable in D that has no value
-        while j < n:
-            if D["d" + str(j + 1)] == 0:
-                break
-            equation = equation + (L[i][j] * D["d" + str(j + 1)])
-            # Stores the string equation to equation_str
-            equation_str = equation_str + " " + str(L[i][j]) + "d" + str(j + 1)
-            j += 1
+    for i in range(len(B)):
+        D.append(B[i])
+        if i == 0:
+            print("d1 =", B[i])
 
-        # Prints the value of d1
-        equation_str = equation_str + " + d" + str(j + 1)
-        if i == 1:
-            print("d1 = ", B[0])
+        for j in range(i):
+            equation_str = equation_str + str(L[i, j]) + "d" + str(j + 1) + " + "
+            D[i] = D[i] - (L[i, j] * D[j])
 
-        print(equation_str + " =", B[j])    # Prints the equation
-        # uses the sympy solve() method to solve the value of the variable that has no value
-        x = Symbol('x')
+        D[i] = D[i] / L[i, i]
+        if i != 0:
+            print(equation_str + "d" + str(i + 1) + " = " + str(B[i]))
+            print("d" + str(i + 1) + " =", D[i])
 
-        value = solve(equation + x - B[j])
-        D["d" + str(i + 1)] = value[0]
-        print("d" + str(i + 1), " = ", value[0])    # Prints the value of d
-
-        j = 0
-        i += 1
-        equation = 0
         equation_str = ""
 
-    # converts dictionary D to a matrix
-    D_array = np.array([D["d1"]])
-    i = 1
-    while i < len(D):
-        D_array = np.append(D_array, [D["d" + str(i + 1)]], axis=0)
-        i += 1
-    return D_array
+    return D
 
 
 """
@@ -201,11 +172,11 @@ def backward_substitution(U, D):
         tmp = round(D[i], 14)
         for j in range(i + 1, u_index):
             tmp = tmp - round(U[i, j], 14) * x_array[j]
-            eq_str = eq_str + "+ " + str(round(U[i, j], 14)) + "(" + "X" + str(j+1) + ")"
+            eq_str = eq_str + "+ " + str(round(U[i, j], 14)) + "(" + "X" + str(j + 1) + ")"
         x_array[i] = tmp / round(U[i, i], 14)
         # Store the equation in a String
-        eq_str = str(tmp) + "(" + "X" + str(i+1) + ")" + eq_str
-        x_str = "X" + str(i+1) + " = " + str(tmp) + "/" + str(round(U[i, i], 14))
+        eq_str = str(tmp) + "(" + "X" + str(i + 1) + ")" + eq_str
+        x_str = "X" + str(i + 1) + " = " + str(tmp) + "/" + str(round(U[i, i], 14))
         # Print the equation with answer
         print(eq_str + "=", D[i])
         print(x_str + " =", x_array[i])
