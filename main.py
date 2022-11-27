@@ -16,52 +16,46 @@ Stores it to a NumPy matrix and returns the three matrix
 
 
 def input_values():
-    sub = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
+    sub = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")  # Translater to make numbers to subscripts
     degree = int(input("Enter the number of variables: "))
-    variables = []
+    X = np.array(["x1".translate(sub)])  # Array variable for X. Stores first variable and translates subscripts
     # A loop that will save unique variables depending on the input
-    for i in range(degree):
-        variables.append(('x' + str(i + 1)).translate(sub))
+    # Translate numbers to subscripts
+    for i in range(degree - 1):
+        X = np.append(X, [('x' + str(i + 2)).translate(sub)], axis=0)
 
-    print(variables)
-    equation_cnt = 0
-    coef_cnt = 0
-    coefficient_array = []
-    B = None
-    X = None
-    A = None
+    equation_cnt = 0  # Counter for the equation
+    coef_cnt = 0  # Counter for the coefficients
+    coefficient_array = []  # Coefficient array. Each array of values will be appended to matrix A
+    B = None  # Initialization for matrix B. Set to None to be checked later if matrix is empty
+    A = None  # Initialization for matrix A. Set to None to be checked later if matrix is empty
     print("Enter the coefficient of the following variables")
     # A loop that will ask for the values of the problem
     while degree > equation_cnt:
         print("Equation ", equation_cnt + 1)
         # Stores the coefficients, variables, and the value of the equation
         while degree > coef_cnt:
-            coefficient = float(input(variables[coef_cnt] + "= "))
-            coefficient_array.append(coefficient)
-            if X is None:
-                # Initialize numpy array if X matrix is null
-                X = np.array([variables[coef_cnt]])
-            else:
-                if variables[coef_cnt] not in X:
-                    # Append horizontally
-                    X = np.append(X, [variables[coef_cnt]], axis=0)
+            coefficient = float(input(X[coef_cnt] + "= "))  # Asks for input. Reads the input as a float
+            coefficient_array.append(coefficient)  # Appends coefficient to coefficient array
             coef_cnt += 1
 
         print("Enter the right hand side of the equation ", equation_cnt + 1)
-        s = float(input("value = "))
+        value = float(input("value = "))  # Asks for input. Reads the input as a float
+        # Initializes matrix B if empty, otherwise append value to the matrix
         if B is None:
-            B = np.array([s])
+            B = np.array([value])
         else:
-            B = np.append(B, [s], axis=0)
+            B = np.append(B, [value], axis=0)
 
+        # Initializes matrix A if empty, otherwise append coefficient array to the matrix
         if A is None:
             A = np.array([coefficient_array])
         else:
             A = np.append(A, [coefficient_array], axis=0)
 
-        coefficient_array = []
-        coef_cnt = 0
-        equation_cnt += 1
+        coefficient_array = []  # Erase values of coefficient array
+        coef_cnt = 0  # Sets the coefficient counter back to 0
+        equation_cnt += 1   # Counter moves to the next equation
     return A, B, X
 
 
@@ -73,49 +67,46 @@ Returns matrix U and matrix L
 
 
 def decomposition(A):
-    n = len(A)
-    U = np.copy(A)
-    L = np.zeros((n, n))
+    n = len(A)  # Stores length of A to n
+    U = np.copy(A)  # Copies the values of A to matrix U
+    L = np.zeros((n, n))  # Initializes matrix L with the same size with A. Values are set to 0
 
-    i = 0
-    j = 0
-    # Sets the needed 0s and 1s for the matrix L
+    i = 0  # First counter for the column
+    j = 0  # Second counter for the column
+    # Sets the middle diagonal values of the matrix L to 1
     while i < n:
-        while j < n - 1:
-            j += 1
-            L[i][j] = 0
-
         L[i][i] = 1
         i += 1
-        j = i
 
-    i = 0
-    k = 0
+    i = 0  # Sets counter i back to 0
+    k = 0  # Counter for the row
     # Gaussian Elimination for matrix U
-    # Solves the values per row
+    # Solves matrix L at the same time
     while i < n:
-
+        # Solves the needed values per column
         while k < n - 1:
-
-            divisor = U[i][i]
-            k += 1
-            j = 0
+            divisor = U[i][i]  # Initializes the divisor needed for the row formula
+            k += 1  # Moves to the next row
+            # Condition that will check if the number is positive or negative
+            # Initializes the multiplier needed for the row formula
             if U[k][i] > 0:
-                multiplier = -abs(U[k][i])
+                multiplier = -abs(U[k][i])  # Sets the multiplier as negative
             else:
-                multiplier = abs(U[k][i])
+                multiplier = abs(U[k][i])  # Sets the multiplier as positive
 
             L[k][i] = U[k][i] / divisor  # Sets the value of L
             print()
             print(U[k][i], " / ", divisor, " = ", L[k][i])  # Prints the formula for the lower diagonal matrix
             print("L ", L)
+            # Solves the values of the row
             while j < n:
                 U[k][j] = (U[i][j] / divisor) * multiplier + U[k][j]  # Sets the value of U
-                j += 1
+                j += 1  # Moves to the next column or value
 
             print()
             print("U ", U)
             print("( R", i + 1, " / ", divisor, ")", " * ", multiplier, " + R", k + 1)  # Prints the row formula
+            j = 0
         i += 1
         k = i
 
@@ -135,24 +126,26 @@ Returns matrix D(values of each variable)
 
 
 def forward_substitution(L, B):
-    D = []
-    equation_str = ""
+    D = []  # Initializes array D
+    equation_str = ""  # Equation string. Used to print the equation
+    # Forward Substitution
     for i in range(len(B)):
-        D.append(B[i])
+        D.append(B[i])  # Appends first value to D
+        # prints the first value of D at the start of the loop
         if i == 0:
             print("d1 =", B[i])
 
         for j in range(i):
-            equation_str = equation_str + str(L[i, j]) + "d" + str(j + 1) + " + "
-            D[i] = D[i] - (L[i, j] * D[j])
+            equation_str = equation_str + str(L[i, j]) + "d" + str(j + 1) + " + "  # Builds the equation_str
+            D[i] = D[i] - (L[i, j] * D[j])  # Solves the value of d
 
-        D[i] = D[i] / L[i, i]
+        D[i] = D[i] / L[i, i]  # Solves the value of d
+        # Prints the equation. Avoids the first value of D
         if i != 0:
             print(equation_str + "d" + str(i + 1) + " = " + str(B[i]))
             print("d" + str(i + 1) + " =", D[i])
 
-        equation_str = ""
-
+        equation_str = ""  # Erases the value of equation_str
     return D
 
 
@@ -186,23 +179,22 @@ def backward_substitution(U, D):
 
 #  Main method
 if __name__ == "__main__":
-    # A, B, X = input_values()
-
+    # A, B, X = input_values()  # Invokes input_values() function. Returns matrices A, B, and X
     # for testing purposes
     A = np.array([[1.0, -1.0, 2.0, 3.0], [2.0, 3.0, -4.0, -1.0], [-1.0, 2.0, -5.0, -4.0], [3.0, 2.0, 3.0, 7.0]])
     B = np.array([6, -2, -7, 4])
     X = np.array(["x1", "x2", "x3", "x4"])
 
-    U, L = decomposition(A)
-    D = forward_substitution(L, B)
-    M = backward_substitution(U, D)
+    U, L = decomposition(A)  # Invokes decomposition function. Returns matrices U and L
+    D = forward_substitution(L, B)  # Invokes forward_substitution function. Returns array D
+    M = backward_substitution(U, D)  # Invokes backward_substitution function. Returns array M
     print(" ")
 
     # for testing purposes
     print("D = ", D)
     print(" ")
-    counter = 0
-    x_value = len(M)
-    while counter < x_value:
+    counter = 0  # Counter for printing the values of X
+    # Prints the values of X
+    while counter < len(M):
         print(X[counter], " = ", (M[counter]))
         counter += 1
