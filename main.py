@@ -156,24 +156,35 @@ Returns matrix D(values of each variable)
 
 
 def backward_substitution(U, D):
-    eq_str = " "
-    print(" ")
+    # Backward Substitution for the upper triangular matrix
+
+    eq_str = " "  # Holds the equation in string form
+    print(" ")  # Spacer
     u_index = U.shape[0]  # Returns an index with the dimensions of U
     x_array = np.zeros(u_index)  # Creates a new array of (u_index) which is filled with zeros
-    # Backward Substitution equation
+
+    # Condition for going through all values in the array, backwards (u_index)
     for i in range(u_index - 1, -1, -1):
+        # Temporarily hold the value of D at i
         tmp = round(D[i], 14)
+        # Condition for solving the values of X per row
         for j in range(i + 1, u_index):
             tmp = tmp - round(U[i, j], 14) * x_array[j]
+            # Store the equation in string form
             eq_str = eq_str + "+ " + str(round(U[i, j], 14)) + "(" + "X" + str(j + 1) + ")"
+
+        # Update the values in x_array
         x_array[i] = tmp / round(U[i, i], 14)
-        # Store the equation in a String
+        # Update the string equation
         eq_str = str(tmp) + "(" + "X" + str(i + 1) + ")" + eq_str
+        # Store the final equation in string form
         x_str = "X" + str(i + 1) + " = " + str(tmp) + "/" + str(round(U[i, i], 14))
+
         # Print the equation with answer
         print(eq_str + "=", D[i])
         print(x_str + " =", x_array[i])
-        eq_str = " "
+        eq_str = " "  # Reset the string
+
     return x_array
 
 
