@@ -12,7 +12,7 @@ def get_mat(matrix_size, text_var, A, B, X):
     # is allocated for the right hand side
     coef_arr = np.zeros((matrix_size, matrix_size + 1), dtype=float)
     # give the temp variable a top-level function scope
-    coef = 0.0
+    coef = 0.03
     for i in range(matrix_size):
         # Represents 1 row in a 2D array
         tempArr = []

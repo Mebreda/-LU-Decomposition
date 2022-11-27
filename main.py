@@ -71,7 +71,6 @@ Applies the Gaussian Elimination to obtain the matrix U while simultaneously sol
 Returns matrix U and matrix L
 """
 
-
 def decomposition(A):
     n = len(A)
     U = np.copy(A)
