@@ -22,19 +22,19 @@ def generate_matrix_entries(frame, matrix_size):
 
 
 def generate_equation_frame(frame, mat_size):
-    equation_box = Text(frame, height=mat_size, width=mat_size * 8)
+    equation_box = Text(frame, height=mat_size + 2, width=mat_size * 16)
     equation_box.grid(row=0, column=0)
 
 
 def generate_diagonal(frame, mat_size):
-    diagonal_matrix_box = Text(frame, height=mat_size, width=mat_size * 8)
+    diagonal_matrix_box = Text(frame, height=mat_size + 2, width=mat_size * 16)
     diagonal_matrix_box.grid(row=0, column=0)
 
 
 def generate_solution(frame, mat_size):
     sol_frm = ttk.Frame(frame, padding="12 10 12 12")
     deriv_frm = ttk.LabelFrame(frame, padding="10 0 10 10")
-    sol_box = Text(sol_frm, height=mat_size, width=mat_size * 8)
+    sol_box = Text(sol_frm, height=mat_size + 2, width=mat_size * 16)
     deriv_btn = ttk.Button(deriv_frm, text="Show Derivation", command=partial(show_derivation, frame))
     sol_box.grid(row=0, column=0)
     deriv_btn.grid(row=10, column=0)
@@ -182,7 +182,7 @@ def show_derivation(root):
     window_frame = ttk.Frame(window, padding="12 10 12 12")
     window_frame.grid(row=0, column=0)
     
-    deriv_box = Text(window_frame, height=10, width=50)
+    deriv_box = Text(window_frame, height=16, width=80)
     deriv_box.grid(row=0, column=0)
 
     # Scrollbar logic
@@ -192,7 +192,7 @@ def show_derivation(root):
     deriv_box.delete('1.0', 'end')
     deriv_box.insert('1.0', s)
     
-    window.title("Child Window")
+    window.title("Derivation Window")
     # Label(window, text=s, font=('Mistral 18 bold')).place(x=150, y=80)
 
 
