@@ -1,9 +1,8 @@
 from tkinter import *
 from tkinter import ttk, simpledialog
 from functools import partial
-import numpy as np
-
 from main import *
+
 
 def generate_matrix_entries(frame, matrix_size):
     text_var = []
@@ -19,33 +18,41 @@ def generate_matrix_entries(frame, matrix_size):
             text_var[row].append(StringVar())
             entries[row].append(Entry(frame, textvariable=text_var[row][col], width=6))
             entries[row][col].grid(row=row, column=col)
-    return text_var
+    return text_var, entries
+
 
 def generate_equation_frame(frame, mat_size):
     equation_box = Text(frame, height=mat_size, width=mat_size * 8)
     equation_box.grid(row=0, column=0)
 
+
 def generate_diagonal(frame, mat_size):
     diagonal_matrix_box = Text(frame, height=mat_size, width=mat_size * 8)
     diagonal_matrix_box.grid(row=0, column=0)
+
 
 def generate_solution(frame, mat_size):
     sol_frm = ttk.Frame(frame, padding="12 10 12 12")
     deriv_frm = ttk.LabelFrame(frame, padding="10 0 10 10")
     sol_box = Text(sol_frm, height=mat_size, width=mat_size * 8)
-    deriv_btn = ttk.Button(deriv_frm, text="Show Derivation")
+    deriv_btn = ttk.Button(deriv_frm, text="Show Derivation", command=partial(show_derivation, frame))
     sol_box.grid(row=0, column=0)
     deriv_btn.grid(row=10, column=0)
 
     sol_frm.grid(row=0, column=0)
     deriv_frm.grid(row=1, column=0)
 
-def generate_controls(frame, text_var, eqn_widget, right_frame, A, B, X):
+
+
+
+def generate_controls(frame, text_var, entries_vars, eqn_widget, right_frame, A, B, X):
     # text_var, eqn_widget, A, B, X
-    solvebtn = ttk.Button(frame, text="Solve", command=partial(solve_handler, text_var, eqn_widget, right_frame, A, B, X))
+    solvebtn = ttk.Button(frame, text="Solve",
+                          command=partial(solve_handler, text_var, eqn_widget, right_frame, A, B, X))
     solvebtn.grid(row=0, column=0)
-    clearbtn = ttk.Button(frame, text="Clear")
+    clearbtn = ttk.Button(frame, text="Clear", command=partial(clear_fields, entries_vars, eqn_widget))
     clearbtn.grid(row=0, column=1)
+
 
 def extract_matrix_input(text_var, A, B, X):
     # Create a matrix of N X (N + 1), where the 1 increment
@@ -59,19 +66,20 @@ def extract_matrix_input(text_var, A, B, X):
             tempArr.append(float(text_var[row][col].get()))
         coef_arr[row] = tempArr.copy()
         # Exclude the RHS
-        A[row] = tempArr.copy()[:len(tempArr) -1]
+        A[row] = tempArr.copy()[:len(tempArr) - 1]
         B.append(float(tempArr[len(tempArr) - 1]))
     # Generate X Matrix
     sub = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
     for i in range(len(text_var)):
         X.append(('x' + str(i + 1)).translate(sub))
 
+
 def show_system(eqn_widget, A, B, X):
     sys_eqn_str = ""
     operand = ""
     for row_index, row in enumerate(A):
         for element_index, element in enumerate(row):
-            temp_str = str(element) + X[element_index]
+            temp_str = str(abs(element)) + X[element_index]
             if element_index + 1 != len(row):
                 next = A[row_index][element_index + 1]
                 if next > 0:
@@ -85,10 +93,12 @@ def show_system(eqn_widget, A, B, X):
     eqn_widget.delete('1.0', 'end')
     eqn_widget.insert('1.0', sys_eqn_str)
 
+
 def clear_mat(mat):
     for row_index, row in enumerate(mat):
         for e_index, e in enumerate(row):
             mat[row_index][e_index] = 0
+
 
 def clear_arr(arr):
     for i, e in enumerate(arr):
@@ -97,18 +107,32 @@ def clear_arr(arr):
         else:
             arr[i] = 0
 
+
+def clear_fields(entries_vars, eqn_widget):
+    blank = ""
+
+    for row in range(len(entries_vars)):
+        # Represents 1 row in a 2D array
+        for col in range(len(entries_vars[0])):
+            entries_vars[row][col].delete(0, END)
+
+    eqn_widget.delete('1.0', 'end')
+    update_right_subframe(right_frame.children['!labelframe'], blank)
+    update_right_subframe(right_frame.children['!labelframe2'], blank)
+    update_d_subframe(right_frame.children['!labelframe3'], blank)
+
+    update_sol_subframe(right_frame.children['!labelframe4'].children['!frame'], blank)
+
+
 def solve_handler(text_var, eqn_widget, right_frame, A, B, X):
-    U, L, D, sol = [], [], [], []
-    # Reset A, B and X
 
     extract_matrix_input(text_var, A, B, X)
 
-
     show_system(eqn_widget, A, B, X)
 
-    U, L = decomposition(A)
-    D = forward_substitution(L, B)
-    sol = backward_substitution(U, D)
+    U, L = decomposition(A.copy())
+    D = forward_substitution(L, B.copy())
+    sol = backward_substitution(U, D.copy())
 
     update_right_subframe(right_frame.children['!labelframe'], U)
     update_right_subframe(right_frame.children['!labelframe2'], L)
@@ -120,7 +144,7 @@ def solve_handler(text_var, eqn_widget, right_frame, A, B, X):
 def update_right_subframe(frame, mat):
     frame.children['!text'].delete('1.0', 'end')
     frame.children['!text'].insert('1.0', str(mat))
-    
+
 
 def update_d_subframe(frame, D):
     frame_str = ""
@@ -134,7 +158,8 @@ def update_d_subframe(frame, D):
 
     frame.children['!text'].delete('1.0', 'end')
     frame.children['!text'].insert('1.0', frame_str)
-    
+
+
 def update_sol_subframe(frame, sol):
     frame_str = ""
     tr_table = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
@@ -148,14 +173,17 @@ def update_sol_subframe(frame, sol):
     frame.children['!text'].delete('1.0', 'end')
     frame.children['!text'].insert('1.0', frame_str)
 
+
 def show_derivation(root):
     window = Toplevel(root)
-
+    s = my_result.getvalue()
+    window.geometry("750x250")
+    window.title("Child Window")
+    Label(window, text=s, font=('Mistral 18 bold')).place(x=150, y=80)
 
 
 
 if __name__ == '__main__':
-
     # Create the root frame
     root = Tk()
     root.title("LU Decomposition Utility")
@@ -186,16 +214,14 @@ if __name__ == '__main__':
     equation_frame.grid(row=2, column=0)
     control_frame.grid(row=3, column=0)
 
-    text_vars = generate_matrix_entries(matrix_frame, matrix_size)
+    text_vars, entries_vars = generate_matrix_entries(matrix_frame, matrix_size)
     generate_equation_frame(equation_frame, matrix_size)
-
 
     # Right frame will contain the L, U and the solutions to the equation
     right_frame = ttk.LabelFrame(main_frame, padding="12 12 12 12")
     right_frame.grid(row=0, column=1)
 
-    generate_controls(control_frame, text_vars, equation_frame.children['!text'], right_frame, A, B, X)
-
+    generate_controls(control_frame, text_vars, entries_vars, equation_frame.children['!text'], right_frame, A, B, X)
 
     # Populate the right frame
     # Upper Diagonal Frame
@@ -211,14 +237,9 @@ if __name__ == '__main__':
     d_matrix_frame.grid(row=2, column=0)
     generate_diagonal(d_matrix_frame, matrix_size)
 
-
     # Solution to the problem
     solution = ttk.LabelFrame(right_frame, padding="12 10 12 12", text="Solution to the system")
     solution.grid(row=3, column=0)
     generate_solution(solution, matrix_size)
-
-
-
-
 
     root.mainloop()

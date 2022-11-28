@@ -1,7 +1,8 @@
 from sympy.solvers import solve
 from sympy import Symbol
 import numpy as np
-
+from io import StringIO
+import sys
 """
 S
 Asks the user for inputs
@@ -13,6 +14,9 @@ Stores it to a NumPy matrix and returns the three matrix
     - B = matrix of numbers on the right-hand side of the equations
     - X = variable matrix
 """
+tmp = sys.stdout
+my_result = StringIO()
+sys.stdout = my_result
 
 
 def input_values():
@@ -30,6 +34,7 @@ def input_values():
     B = None  # Initialization for matrix B. Set to None to be checked later if matrix is empty
     A = None  # Initialization for matrix A. Set to None to be checked later if matrix is empty
     print("Enter the coefficient of the following variables")
+
     # A loop that will ask for the values of the problem
     while degree > equation_cnt:
         print("Equation ", equation_cnt + 1)
@@ -180,7 +185,7 @@ def backward_substitution(U, D):
         # Store the final equation in string form
         x_str = "X" + str(i + 1) + " = " + str(tmp) + "/" + str(round(U[i, i], 14))
 
-        # Print the equation with answer
+        # print the equation with answer
         print(eq_str + "=", D[i])
         print(x_str + " =", x_array[i])
         eq_str = " "  # Reset the string
