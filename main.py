@@ -133,6 +133,8 @@ Returns matrix D(values of each variable)
 def forward_substitution(L, B):
     D = []  # Initializes array D
     equation_str = ""  # Equation string. Used to print the equation
+    print("Forward substitution")
+    print("[L] [D] = [B]\n")
     # Forward Substitution
     for i in range(len(B)):
         D.append(B[i])  # Appends first value to D
@@ -162,7 +164,8 @@ Returns matrix D(values of each variable)
 
 def backward_substitution(U, D):
     # Backward Substitution for the upper triangular matrix
-
+    print("\nBackward substitution")
+    print("[U][X] = [D]")
     eq_str = " "  # Holds the equation in string form
     print(" ")  # Spacer
     u_index = U.shape[0]  # Returns an index with the dimensions of U
