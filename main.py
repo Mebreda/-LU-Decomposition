@@ -101,16 +101,16 @@ def decomposition(A):
 
             L[k][i] = U[k][i] / divisor  # Sets the value of L
             print()
-            print(U[k][i], " / ", divisor, " = ", L[k][i])  # Prints the formula for the lower diagonal matrix
-            print("L ", L)
+            print("Formula for the derivation of the lower diagonal matrix:\n",U[k][i], " / ", divisor, " = ", L[k][i])  # Prints the formula for the lower diagonal matrix
+            print("\nL\n", L)
             # Solves the values of the row
             while j < n:
                 U[k][j] = (U[i][j] / divisor) * multiplier + U[k][j]  # Sets the value of U
                 j += 1  # Moves to the next column or value
 
             print()
-            print("U ", U)
-            print("( R", i + 1, " / ", divisor, ")", " * ", multiplier, " + R", k + 1)  # Prints the row formula
+            print("U\n", U)
+            print("\nRow operation: \n","( R", i + 1, " / ", divisor, ")", " * ", multiplier, " + R", k + 1)  # Prints the row formula
             j = 0
         i += 1
         k = i
