@@ -184,7 +184,7 @@ def backward_substitution(U, D):
         # Update the values in x_array
         x_array[i] = tmp / round(U[i, i], 14)
         # Update the string equation
-        eq_str = str(tmp) + "(" + "X" + str(i + 1) + ")" + eq_str
+        eq_str = str(round(U[i, i], 14)) + "(" + "X" + str(i + 1) + ")" + eq_str
         # Store the final equation in string form
         x_str = "X" + str(i + 1) + " = " + str(tmp) + "/" + str(round(U[i, i], 14))
 
